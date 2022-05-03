@@ -27,6 +27,23 @@ def sort_ofns_desc(nypd_list):
 
     return sorted_tuple
 
+def count_arrests_by_age(nypd_list):
+    age_group_dict = {}
+    for row_dict in nypd_list:
+        (age_key, pd_key)   = row_dict["AGE_GROUP"], row_dict["PD_CD"]
+        if age_key in age_group_dict.keys():
+            if pd_key in age_group_dict[age_key].keys():
+                count = age_group_dict[age_key][pd_key]
+                count += 1
+                age_group_dict[age_key].update({pd_key: count})
+            else:
+                age_group_dict[age_key][pd_key] = 1
+        else:
+            # we have a new age group so start from 1
+            age_group_dict[age_key] = {pd_key: 1}
+
+    return age_group_dict
+
 
 if __name__ == "__main__" :       
     # filename = "../data/nypd-arrest-data-2018-1.csv"
@@ -39,6 +56,17 @@ if __name__ == "__main__" :
 
     print("First 10 entries are:-")
     print(ofns_sorted_tuple[0:10])
+
+    age_group_dict = count_arrests_by_age(nypd_list)
+    
+    #TODO Find the 4th greatest number of arrests by PD_CD for each age group and output to the console
+    print('\n\nfind 4th greatest by age group')
+
+
+    for key in age_group_dict.keys():
+        sorted_tuple = sorted(age_group_dict[key].items(), key=lambda x:x[1], reverse=True)
+        print(f'{key} \t {sorted_tuple}')
+        # print(sorted_tuple[3])
     
 
 
