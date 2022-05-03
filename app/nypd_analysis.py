@@ -45,9 +45,22 @@ def count_arrests_by_age(nypd_list):
     return age_group_dict
 
 
+def write_csv_file(nypd_list, search_arg, output_filepath):
+    filtered_list = [ row_dict for row_dict in nypd_list if row_dict["OFNS_DESC"].startswith(search_arg) ]
+    print(filtered_list)
+    with open(output_filepath, mode='w') as report_file:
+        fieldnames = nypd_list[0].keys()
+        writer = csv.DictWriter(report_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row_dict in filtered_list:
+            writer.writerow(row_dict)
+
+
+
 if __name__ == "__main__" :       
     # filename = "../data/nypd-arrest-data-2018-1.csv"
-    filename = "../data/small.csv"
+    # filename = "../data/small.csv"
+    filename = "../data/medium.csv"
 
     nypd_list = read_csv(filename)
     ofns_sorted_tuple = sort_ofns_desc(nypd_list)
@@ -67,7 +80,10 @@ if __name__ == "__main__" :
         sorted_tuple = sorted(age_group_dict[key].items(), key=lambda x:x[1], reverse=True)
         print(f'{key} \t {sorted_tuple}')
         # print(sorted_tuple[3])
-    
+
+    write_csv_file(nypd_list, "BU", "./report.csv")
+
+
 
 
 
