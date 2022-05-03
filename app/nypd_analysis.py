@@ -1,7 +1,5 @@
 import csv
 
-# filename = "'./data/nypd-arrest-data-2018-1.csv'"
-filename = "../data/small.csv"
 
 def read_csv(filename):
     new_list = []
@@ -29,13 +27,19 @@ def sort_ofns_desc(nypd_list):
 
     return sorted_tuple
 
+
 if __name__ == "__main__" :       
+    # filename = "../data/nypd-arrest-data-2018-1.csv"
+    filename = "../data/small.csv"
+
     nypd_list = read_csv(filename)
     ofns_sorted_tuple = sort_ofns_desc(nypd_list)
 
     print(ofns_sorted_tuple)
-    # print(nypd_list)
-    # print(ofns_dict)
+
+    print("First 10 entries are:-")
+    print(ofns_sorted_tuple[0:10])
+    
 
 
 
