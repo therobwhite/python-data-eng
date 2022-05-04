@@ -1,3 +1,4 @@
+import argparse
 import csv
 
 
@@ -58,11 +59,14 @@ def write_csv_file(nypd_list, search_arg, output_filepath):
 
 
 if __name__ == "__main__" :       
-    # filename = "../data/nypd-arrest-data-2018-1.csv"
-    # filename = "../data/small.csv"
-    filename = "../data/medium.csv"
+    # Create help and handle parameters
+    parser = argparse.ArgumentParser(description="filter and analyse nypd data")
+    parser.add_argument("-i", "--input_filepath", type=str, required=True, help="source data csv filepath")
+    parser.add_argument("-o", "--output_filepath", type=str, help="output data csv filepath")
+    parser.add_argument("-s", "--output_search_arg", type=str, help="output filter data csv arg")
+    args = parser.parse_args()
 
-    nypd_list = read_csv(filename)
+    nypd_list = read_csv(args.input_filepath)
     ofns_sorted_tuple = sort_ofns_desc(nypd_list)
 
     print(ofns_sorted_tuple)
@@ -81,7 +85,8 @@ if __name__ == "__main__" :
         print(f'{key} \t {sorted_tuple}')
         # print(sorted_tuple[3])
 
-    write_csv_file(nypd_list, "BU", "./report.csv")
+    if args.output_search_arg and args.output_filepath:
+        write_csv_file(nypd_list, args.output_search_arg, args.output_filepath)
 
 
 
