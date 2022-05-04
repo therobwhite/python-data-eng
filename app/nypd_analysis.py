@@ -1,5 +1,6 @@
 import argparse
 import csv
+import os
 import sqlite3
 import subprocess
 
@@ -61,6 +62,10 @@ def write_csv_file(nypd_list, search_arg, output_filepath):
 
 def create_sqlite_db(db_filepath, input_filepath):
     cmd = ".import " + input_filepath + " nypd"
+    # check if sqlite db exists - if so delete to avoid appending data
+    if os.path.exists(db_filepath):
+        os.remove(db_filepath)
+    # Use subprocess here as native sqllite import cmd more performant than python looping
     result = subprocess.run(['sqlite3', db_filepath, '-cmd', '.mode csv', cmd])
     con = sqlite3.connect(db_filepath)
     con.execute("select * from nypd")
@@ -78,20 +83,18 @@ if __name__ == "__main__" :
     nypd_list = read_csv(args.input_filepath)
     ofns_sorted_tuple = sort_ofns_desc(nypd_list)
 
-    print(ofns_sorted_tuple)
-
-    print("First 10 entries are:-")
+    print("First 10 OFNS_DESC entries (descending) are:-")
     print(ofns_sorted_tuple[0:10])
 
     age_group_dict = count_arrests_by_age(nypd_list)
     
-    print('\n\nfind 4th greatest by age group')
+    print('\n\n4th most popular PD class by age group')
 
 
+    print("Age Group \t PD Class, Count")
     for key in age_group_dict.keys():
         sorted_tuple = sorted(age_group_dict[key].items(), key=lambda x:x[1], reverse=True)
-        print(f'{key} \t {sorted_tuple}')
-        # print(sorted_tuple[3])
+        print(f'{key} \t\t {sorted_tuple[3]}')
 
     if args.output_search_arg and args.output_filepath:
         write_csv_file(nypd_list, args.output_search_arg, args.output_filepath)
