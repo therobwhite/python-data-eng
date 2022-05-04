@@ -1,5 +1,7 @@
 import argparse
 import csv
+import sqlite3
+import subprocess
 
 
 def read_csv(filename):
@@ -57,6 +59,12 @@ def write_csv_file(nypd_list, search_arg, output_filepath):
             writer.writerow(row_dict)
 
 
+def create_sqlite_db(db_filepath, input_filepath):
+    cmd = ".import " + input_filepath + " nypd"
+    result = subprocess.run(['sqlite3', db_filepath, '-cmd', '.mode csv', cmd])
+    con = sqlite3.connect(db_filepath)
+    con.execute("select * from nypd")
+
 
 if __name__ == "__main__" :       
     # Create help and handle parameters
@@ -64,6 +72,7 @@ if __name__ == "__main__" :
     parser.add_argument("-i", "--input_filepath", type=str, required=True, help="source data csv filepath")
     parser.add_argument("-o", "--output_filepath", type=str, help="output data csv filepath")
     parser.add_argument("-s", "--output_search_arg", type=str, help="output filter data csv arg")
+    parser.add_argument("-d", "--output_db_filepath", type=str, required=True, help="output sqlite db filepath")
     args = parser.parse_args()
 
     nypd_list = read_csv(args.input_filepath)
@@ -76,7 +85,6 @@ if __name__ == "__main__" :
 
     age_group_dict = count_arrests_by_age(nypd_list)
     
-    #TODO Find the 4th greatest number of arrests by PD_CD for each age group and output to the console
     print('\n\nfind 4th greatest by age group')
 
 
@@ -89,7 +97,7 @@ if __name__ == "__main__" :
         write_csv_file(nypd_list, args.output_search_arg, args.output_filepath)
 
 
-
+    create_sqlite_db(args.output_db_filepath, args.input_filepath)
 
 
 
